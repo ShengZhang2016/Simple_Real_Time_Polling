@@ -6,8 +6,8 @@ Using NodeJS and Express, based on Pusher
     > Store voting results on MongoDB, using mLab.
 
 ## Future
-    > In the future, we may add an Login property to this polling app, making it more robust.
-    
+    > In the future, we may add a Login property to this polling app, making it more robust.
+    > Deploy app to AWS Elastic Beanstalk.
 
 ## Exisiting problem
     > For some reason, CanvasJS cannot show chart in real time when vote counts increasing.

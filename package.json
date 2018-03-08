@@ -1,0 +1,31 @@
+{
+  "name": "simple_real_time_polling",
+  "version": "1.0.0",
+  "description": "It's a simple real time polling app",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "supervisor app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShengZhang2016/Simple_Real_Time_Polling.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "Express"
+  ],
+  "author": "Sheng Zhang",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "body-parser": "^1.18.2",
+    "pusher": "^1.5.1",
+    "cors": "^2.8.4",
+    "mongoose": "^5.0.2"
+  },
+  "bugs": {
+    "url": "https://github.com/ShengZhang2016/Simple_Real_Time_Polling/issues"
+  },
+  "homepage": "https://github.com/ShengZhang2016/Simple_Real_Time_Polling#readme"
+}

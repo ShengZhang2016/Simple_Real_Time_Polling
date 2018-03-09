@@ -1,0 +1,95 @@
+/*
+* @Author: zhangsheng
+* @Date:   2018-03-07 02:49:24
+* @Last Modified by:   zhangsheng
+* @Last Modified time: 2018-03-08 23:01:18
+*/
+
+const form = document.getElementById('vote-form');
+
+//form submit event
+form.addEventListener('submit', (e) => {
+	const choice = document.querySelector('input[name=os]:checked').value;
+	const data = {os: choice};
+
+	fetch('http://localhost:3000/poll', {
+		method: 'post',
+		body: JSON.stringify(data),
+		headers: new Headers({
+			'Content-Type': 'application/json'
+		})
+	})
+		.then(res => res.json())
+		.then(data => console.log(data))
+		.catch(err => console.error(err));
+
+	e.preventDefault();
+});
+
+fetch('http://localhost:3000/poll')
+	.then(res => res.json())
+	.then(data => {
+		const votes = data.votes;
+		const totalVotes = votes.length;
+		document.querySelector('#chartTitle').textContent = `Total Votes: ${totalVotes}`;
+
+		// Refresh the Total Votes every 3 seconds
+	    setInterval(() => {
+	      fetch('http://localhost:3000/poll')
+	        .then(res => res.json())
+	        .then(data => document.querySelector('#chartTitle').textContent = `Total Votes: ${data.votes.length}`)
+	        .catch(err => console.log(err));
+	    }, 3000);
+		// Count vote for each column: accumulator/ current
+		const voteCounts = votes.reduce((acc, vote) => ((acc[vote.os] = (acc[vote.os] || 0) + parseInt(votes.points)), acc),{});
+		// Set initial Data Points
+	    if (Object.keys(voteCounts).length === 0 && voteCounts.constructor === Object) {
+	      voteCounts.Windows = 0;
+	      voteCounts.MacOS = 0;
+	      voteCounts.Linux = 0;
+	      voteCounts.Other = 0;
+	    }﻿
+		let dataPoints = [
+			{label: "Windows", y: voteCounts.Windows},
+			{label: "MacOS", y: voteCounts.MacOS},
+			{label: "Linux", y: voteCounts.Linux},
+			{label: "Other", y: voteCounts.Other}
+		];
+
+		const chartContainer = document.querySelector("#chartContainer");
+
+		if (chartContainer) {
+			const chart = new CanvasJS.Chart("chartContainer", {
+				animationEnabled: true,
+				theme: 'theme1',
+				data: [
+					{
+						type: 'column',
+						dataPoints: dataPoints
+					}
+				]
+			});
+			chart.render();
+
+			// Enable pusher logging - don't include this in production
+		    Pusher.logToConsole = true;
+
+		    var pusher = new Pusher('c73f06c3c931b139f95f', {
+		      cluster: 'us2',
+		      encrypted: true
+		    });
+
+		    var channel = pusher.subscribe('os-poll');
+		    channel.bind('os-vote', function(data) {
+		    	dataPoints = dataPoints.map(x => {
+		    		if (x.label == data.os) {
+		    			x.y += data.points;
+		    			return x;
+		    		} else {
+		    			return x;
+		    		}
+		    	});
+		    	chart.render();
+		    });
+		}
+	});
